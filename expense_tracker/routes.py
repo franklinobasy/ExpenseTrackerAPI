@@ -96,10 +96,10 @@ def get_all_user(current_user):
 @app.route('/api/user/<public_id>', methods=['GET'])
 @validate_token
 def get_one_user(current_user, public_id):
-        if current_user.public_id != public_id:
+        if (current_user.public_id != public_id) and (current_user.username != 'Admin'):
                 return jsonify({"message":"invalid user details"})
 
-        user = User.query.filter_by(public_id= current_user.public_id).first()
+        user = User.query.filter_by(public_id= public_id).first()
 
         user_data = dict()
         user_data['id'] = user.id
