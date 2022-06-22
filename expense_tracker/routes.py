@@ -93,13 +93,11 @@ def get_all_user(current_user):
 
         return jsonify({"users": output})
 
-@app.route('/api/user/<public_id>', methods=['GET'])
+@app.route('/api/user/1', methods=['GET'])
 @validate_token
-def get_one_user(current_user, public_id):
-        if (current_user.public_id != public_id) and (current_user.username != 'Admin'):
-                return jsonify({"message":"invalid user details"})
-
-        user = User.query.filter_by(public_id= public_id).first()
+def get_one_user(current_user):
+        
+        user = User.query.filter_by(public_id= current_user.public_id).first()
 
         user_data = dict()
         user_data['id'] = user.id
@@ -108,3 +106,30 @@ def get_one_user(current_user, public_id):
         user_data['public_id'] = user.public_id
 
         return jsonify({"user": user_data})
+
+@app.route('/api/user/1', methods=['PUT'])
+@validate_token
+def update_user(current_user):
+        data = request.get_json()
+
+        if not data:
+                return jsonify({"message": "No information supplied"})
+
+        if 'username' not in data or 'password' not in data:
+                return jsonify({"message": "Only username and password can be changed"})
+
+        user = User.query.filter_by(public_id=current_user.public_id).first()
+
+        if not user:
+                return jsonify({"message": "Invalid user details"})
+
+        user.username = data['username']
+
+        if data['password']:
+                hashed_password = generate_password_hash(data['password'])
+                user.password = hashed_password
+
+        db.session.commit()
+
+        return jsonify({"message": "user details changed successfully!"})
+       
