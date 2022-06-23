@@ -132,4 +132,26 @@ def update_user(current_user):
         db.session.commit()
 
         return jsonify({"message": "user details changed successfully!"})
-       
+
+@app.route('/api/expenses', methods=['POST'])
+@validate_token
+def add_expense(current_user):
+        data = request.get_json()
+        date= datetime.utcnow()
+        if not data:
+                return jsonify({"message": "No data found"})
+
+        if 'description' not in data:
+                return jsonify({'message': "No description found"})
+
+        if 'amount' not in data:
+                return jsonify({"message":"No amount found!"})
+
+        if 'date' in data:
+                 date = datetime.strptime(data['date'], r"%d/%m/%Y")
+
+        expense_made = Expense(description= data['description'], amount=data['amount'], user_id=current_user.id, date = date)
+        db.session.add(expense_made)
+        db.session.commit()
+
+        return jsonify({"success": "expense recorded!"})
