@@ -20,4 +20,4 @@ class Expense(db.Model):
         user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
         def __repr__(self):
-                return f"Expense <{self.description}-{self.id}, User <{self.user_id}>"
+                return f"{self.description[:20]}... on {self.date.strftime('%c')} by User <{self.user_id}>"
