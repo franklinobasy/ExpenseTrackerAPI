@@ -155,3 +155,30 @@ def add_expense(current_user):
         db.session.commit()
 
         return jsonify({"success": "expense recorded!"})
+
+@app.route('/api/expenses', methods=['GET'])
+@validate_token
+def get_all_expenses(current_user):
+        expenses = Expense.query.filter_by(user_id= current_user.id).all()
+        if not expenses:
+                return jsonify({"message":"No Expense record found"})
+
+        output = list()
+        
+        for expense in expenses:
+                expense_data=dict()
+
+                expense_data['id'] = expense.id
+                expense_data['description']= expense.description
+                expense_data['amount'] = expense.amount
+                expense_data['date'] = expense.date
+
+                output.append(expense_data)
+
+        return jsonify({"user's expense": output})
+
+
+@app.route('/api/expenses', methods=['GET'])
+@validate_token
+def get_all_expenses(current_user):
+        pass
