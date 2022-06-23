@@ -1,2 +1,2 @@
-expense_tracker\__pycache__\
+expense_tracker/__pycache__/*
 *.db
