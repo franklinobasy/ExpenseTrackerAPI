@@ -156,9 +156,9 @@ def add_expense(current_user):
 
         return jsonify({"success": "expense recorded!"})
 
-@app.route('/api/expenses', methods=['GET'])
+@app.route('/api/expenses/1', methods=['GET'])
 @validate_token
-def get_all_expenses(current_user):
+def get_user_expenses(current_user):
         expenses = Expense.query.filter_by(user_id= current_user.id).all()
         if not expenses:
                 return jsonify({"message":"No Expense record found"})
@@ -181,4 +181,24 @@ def get_all_expenses(current_user):
 @app.route('/api/expenses', methods=['GET'])
 @validate_token
 def get_all_expenses(current_user):
-        pass
+        if current_user.username != 'Admin':
+                return jsonify({"message": "You are not allowed to use this route"})
+
+        expenses = Expense.query.all()
+        if not expenses:
+                return jsonify({"message":"expense record is empty"})
+
+        output = list()
+        
+        for expense in expenses:
+                expense_data=dict()
+
+                expense_data['id'] = expense.id
+                expense_data['description']= expense.description
+                expense_data['amount'] = expense.amount
+                expense_data['date'] = expense.date
+                expense_data['user_id'] = expense.user_id
+
+                output.append(expense_data)
+
+        return jsonify({"expenses": output})
