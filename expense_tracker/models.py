@@ -1,4 +1,3 @@
-from email.policy import default
 from expense_tracker import db
 from datetime import datetime
 
