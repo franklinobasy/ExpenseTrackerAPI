@@ -227,5 +227,15 @@ def delete_expense(current_user, id):
         return jsonify({"message":"expense deleted successfully."})
 
 
+@app.route('/api/expenses/total', methods=['GET'])
+@validate_token
+def get_user_total(current_user):
+        expenses = Expense.query.filter_by(user_id=current_user.id).all()
+        if not expenses:
+                return jsonify({"message":"No expense found!"})
 
+        total = 0
+        for expense in expenses:
+                total+=float(expense.amount)
 
+        return jsonify({"total": total})
