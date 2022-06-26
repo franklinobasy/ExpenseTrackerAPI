@@ -133,6 +133,17 @@ def update_user(current_user):
 
         return jsonify({"message": "user details changed successfully!"})
 
+@app.route('/api/user/1', methods=['DELETE'])
+@validate_token
+def delete_user(current_user):
+        if current_user.username == 'Admin':
+                return jsonify({"message": "Admin cannot be deleted!"})
+
+        db.session.delete(current_user)
+        db.session.commit()
+
+        return jsonify({"message": "user deleted successfully!"})
+
 @app.route('/api/expenses', methods=['POST'])
 @validate_token
 def add_expense(current_user):
@@ -202,3 +213,19 @@ def get_all_expenses(current_user):
                 output.append(expense_data)
 
         return jsonify({"expenses": output})
+
+
+@app.route('/api/expenses/<id>', methods=['DELETE'])
+@validate_token
+def delete_expense(current_user, id):
+        expense = Expense.query.filter_by(id = id, user_id=current_user.id).first()
+        if not expense:
+                return jsonify({"message":f"No expense with id-{id} found!"})
+
+        db.session.delete(expense)
+        db.session.commit()
+        return jsonify({"message":"expense deleted successfully."})
+
+
+
+
